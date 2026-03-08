@@ -29,18 +29,44 @@ export default createRoute(async (c) => {
         {/* SIDEBAR: BRANDING & SETTINGS */}
         <div class="lg:col-span-1 space-y-8">
           <section class="bg-white p-8 border border-neutral-100 shadow-sm space-y-6">
-            <h2 class="text-[11px] font-bold uppercase tracking-[0.3em] border-b pb-4">Identity</h2>
-            <div class="space-y-4">
-              <div class="space-y-2">
-                <label class="block text-[9px] font-bold uppercase tracking-widest text-neutral-400">Logo URL</label>
-                <input type="text" name="logo" value={data.logo} class="w-full border-b border-neutral-200 py-2 outline-none focus:border-black transition text-sm" placeholder="https://..." />
+            <h2 class="text-[11px] font-bold uppercase tracking-[0.3em] border-b pb-4">Identity & Branding</h2>
+            
+            <div class="space-y-6">
+              {/* Desktop Logo */}
+              <div class="space-y-4">
+                <div class="space-y-2">
+                  <label class="block text-[9px] font-bold uppercase tracking-widest text-neutral-400">Desktop Logo URL (Horizontal)</label>
+                  <input type="text" name="logo_desktop" value={data.logo_desktop || data.logo} class="w-full border-b border-neutral-200 py-2 outline-none focus:border-black transition text-sm" placeholder="https://..." />
+                </div>
+                <div class="space-y-2">
+                  <label class="block text-[9px] font-bold uppercase tracking-widest text-neutral-400">Desktop Logo Width</label>
+                  <input type="text" name="logo_width_desktop" value={data.logo_width_desktop || data.logo_width || '180px'} class="w-full border-b border-neutral-200 py-2 outline-none focus:border-black transition text-sm" placeholder="e.g. 200px" />
+                </div>
               </div>
-              <div class="space-y-2">
-                <label class="block text-[9px] font-bold uppercase tracking-widest text-neutral-400">Logo Width (Desktop)</label>
-                <input type="text" name="logo_width" value={data.logo_width || '180px'} class="w-full border-b border-neutral-200 py-2 outline-none focus:border-black transition text-sm" />
+
+              {/* Mobile Logo & Favicon (Auto Sync) */}
+              <div class="space-y-4 pt-4 border-t border-neutral-100">
+                <div class="space-y-2">
+                  <label class="block text-[9px] font-bold uppercase tracking-widest text-neutral-400">Mobile Logo URL (Square 1:1)</label>
+                  <input type="text" name="logo_mobile" value={data.logo_mobile || data.favicon || ''} class="w-full border-b border-neutral-200 py-2 outline-none focus:border-black transition text-sm" placeholder="https://..." />
+                  <p class="text-[8px] text-neutral-400 leading-relaxed mt-1">This square logo will automatically be used as your website's Favicon.</p>
+                </div>
+                <div class="space-y-2">
+                  <label class="block text-[9px] font-bold uppercase tracking-widest text-neutral-400">Mobile Logo Width</label>
+                  <input type="text" name="logo_width_mobile" value={data.logo_width_mobile || '45px'} class="w-full border-b border-neutral-200 py-2 outline-none focus:border-black transition text-sm" placeholder="e.g. 45px" />
+                </div>
+              </div>
+
+              {/* Top Bar Text */}
+              <div class="space-y-4 pt-4 border-t border-neutral-100">
+                <div class="space-y-2">
+                  <label class="block text-[9px] font-bold uppercase tracking-widest text-neutral-400">Top Bar Announcement</label>
+                  <input type="text" name="top_bar_text" value={data.top_bar_text || 'Authentic Luxury Goods Only'} class="w-full border-b border-neutral-200 py-2 outline-none focus:border-black transition text-sm" placeholder="Enter top bar text..." />
+                </div>
               </div>
             </div>
-            <div class="flex flex-col gap-4 pt-4">
+
+            <div class="flex flex-col gap-4 pt-6 border-t border-neutral-100">
               <label class="flex items-center gap-3 cursor-pointer group">
                 <input type="checkbox" name="show_cart" checked={data.show_cart !== false} class="w-4 h-4 accent-black" />
                 <span class="text-[10px] font-bold uppercase tracking-widest group-hover:text-black transition">Show Shopping Cart</span>
@@ -147,12 +173,21 @@ export default createRoute(async (c) => {
         document.getElementById('header-form').onsubmit = async (e) => {
           e.preventDefault();
           const fd = new FormData(e.target);
+          
+          // Mengambil nilai logo mobile untuk disinkronkan ke favicon
+          const logoMobileUrl = fd.get('logo_mobile');
+
           const payload = {
             id: fd.get('id'),
             title: 'Main Site Navigation',
             content_json: JSON.stringify({
-              logo: fd.get('logo'),
-              logo_width: fd.get('logo_width'),
+              logo: fd.get('logo_desktop'), // Fallback untuk jaga-jaga
+              logo_desktop: fd.get('logo_desktop'),
+              logo_width_desktop: fd.get('logo_width_desktop'),
+              logo_mobile: logoMobileUrl,
+              logo_width_mobile: fd.get('logo_width_mobile'),
+              favicon: logoMobileUrl, // LOGO MOBILE OTOMATIS MENJADI FAVICON
+              top_bar_text: fd.get('top_bar_text'),
               show_cart: fd.get('show_cart') === 'on',
               show_search: fd.get('show_search') === 'on',
               menu: menuState
