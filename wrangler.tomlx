@@ -23,4 +23,5 @@ migrations_dir = "d1/migrations"
 # Gunakan command: npx wrangler r2 bucket create premium-store-images
 [[r2_buckets]]
 binding = "IMAGE_BUCKET"
+
 bucket_name = "visoe-store-images"
